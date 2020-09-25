@@ -15,7 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.urls import path, include, re_path
+from giveaway.views import MainView, AddDonation, Login, Register
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    re_path(r"^admin/", admin.site.urls),
+    path("", MainView.as_view(), name="main"),
+    path("add-donation/", AddDonation.as_view(), name="add-donation"),
+    path("login/", Login.as_view(), name="login"),
+    path("register/", Register.as_view(), name="register"),
+
 ]
