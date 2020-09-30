@@ -220,8 +220,73 @@ document.addEventListener("DOMContentLoaded", function() {
      */
     updateForm() {
       this.$step.innerText = this.currentStep;
-
+      
+      // Filter by categories
+      
+      if (this.currentStep == 3) {
+        
+        var cList = [];
+        $("input:checkbox[name='categories']").each(function () {
+          if (this.checked) {
+            cList.push(this.value); // Lista wybranych kategorii
+          }
+        });
+        console.log (cList);
+        
+        $("div[data-categories]").each(function () {
+          var institutionCats = $(this).data('categories').split(",")
+          console.log(institutionCats);
+          let allFounded = cList.every( ai => institutionCats.includes(ai) );
+          if (!allFounded) {
+            $(this).hide();
+          } else {
+            $(this).show();
+          }
+        })
+      }
       // TODO: Validation
+      
+
+
+  //       var sThisVal = (this.checked);
+  //       sList += (sList=="" ? sThisVal : "," + sThisVal);
+  //   });
+  //   console.log (sList);
+  // }
+    // }
+    // var sList = "";
+    // // $(this).attr('data-fullText')
+    // // $( "body" ).data( "foo", 52 )
+    // $('div[data=]').each(function () {
+    //   sList += $(this).data('categories');
+    // })
+    // console.log (sList);
+
+
+
+    // $('div.form-group--checkbox').each(function(i, obj) {
+    //   if ($(this.id)
+    // });
+
+
+
+
+  //  function toggleFields() {
+  //   var arr = ['3','4','5'];
+  //   var value = $("#chosenmove1").val();
+    
+  //   if (jQuery.inArray(value, arr) > -1)
+  //       $("#hideme").show();
+  //   else
+  //       $("#hideme").hide();
+    
+  //   }
+
+//   if (this.currentStep == 3) {
+//       // alert("TEST")
+//       //   var element = document.getElementById("aaa");
+//       //   element.parentNode.removeChild(element);
+//  }
 
       this.slides.forEach(slide => {
         slide.classList.remove("active");
@@ -235,7 +300,7 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
       // TODO: get data from inputs and show them in summary
-    }
+  }
 
     /**
      * Submit form

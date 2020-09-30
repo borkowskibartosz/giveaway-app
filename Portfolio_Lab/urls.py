@@ -15,14 +15,18 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
+
 from django.urls import path, include, re_path
-from giveaway.views import MainView, AddDonation, Login, Register
+from giveaway.views import MainView, AddDonation, Register, Login, AddDonationComplete
 
 urlpatterns = [
     re_path(r"^admin/", admin.site.urls),
     path("", MainView.as_view(), name="main"),
     path("add-donation/", AddDonation.as_view(), name="add-donation"),
-    path("login/", Login.as_view(), name="login"),
     path("register/", Register.as_view(), name="register"),
-
+    path("login/", Login.as_view(), name="login"),
+    path("logout/", auth_views.LogoutView.as_view(next_page="main"), name="logout",),
+    path('confirmation/', AddDonationComplete.as_view(), name ='confirmation'),
 ]
+
