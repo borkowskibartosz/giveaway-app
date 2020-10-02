@@ -1,7 +1,33 @@
-document.addEventListener("DOMContentLoaded", function() {
+// https://stackoverflow.com/questions/298772/django-template-variables-and-javascript
+
+$(document).ready(function(){
+  function getCookie(c_name) {
+      if(document.cookie.length > 0) {
+          c_start = document.cookie.indexOf(c_name + "=");
+          if(c_start != -1) {
+              c_start = c_start + c_name.length + 1;
+              c_end = document.cookie.indexOf(";", c_start);
+              if(c_end == -1) c_end = document.cookie.length;
+              return unescape(document.cookie.substring(c_start,c_end));
+          }
+      }
+      return "";
+  }
+
+  $(function () {
+      $.ajaxSetup({
+          headers: {
+              "X-CSRFToken": getCookie("csrftoken")
+          }
+      });
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
   /**
    * HomePage - Help section
    */
+  var institutionCats
   class Help {
     constructor($el) {
       this.$el = $el;
@@ -63,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function() {
       e.preventDefault();
       const page = e.target.dataset.page;
 
-      console.log(page);
+      // console.log(page);
     }
   }
   const helpSection = document.querySelector(".help");
@@ -143,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function() {
   /**
    * Hide elements when clicked on document
    */
-  document.addEventListener("click", function(e) {
+  document.addEventListener("click", function (e) {
     const target = e.target;
     const tagName = target.tagName;
 
@@ -220,23 +246,23 @@ document.addEventListener("DOMContentLoaded", function() {
      */
     updateForm() {
       this.$step.innerText = this.currentStep;
-      
+
       // Filter by categories
-      
+
       if (this.currentStep == 3) {
-        
+
         var cList = [];
         $("input:checkbox[name='categories']").each(function () {
           if (this.checked) {
             cList.push(this.value); // Lista wybranych kategorii
           }
         });
-        console.log (cList);
-        
+        // console.log (cList);
+
         $("div[data-categories]").each(function () {
-          var institutionCats = $(this).data('categories').split(",")
-          console.log(institutionCats);
-          let allFounded = cList.every( ai => institutionCats.includes(ai) );
+          institutionCats = $(this).data('categories').split(",")
+          // console.log(institutionCats);
+          let allFounded = cList.every(ai => institutionCats.includes(ai));
           if (!allFounded) {
             $(this).hide();
           } else {
@@ -245,48 +271,48 @@ document.addEventListener("DOMContentLoaded", function() {
         })
       }
       // TODO: Validation
-      
-
-
-  //       var sThisVal = (this.checked);
-  //       sList += (sList=="" ? sThisVal : "," + sThisVal);
-  //   });
-  //   console.log (sList);
-  // }
-    // }
-    // var sList = "";
-    // // $(this).attr('data-fullText')
-    // // $( "body" ).data( "foo", 52 )
-    // $('div[data=]').each(function () {
-    //   sList += $(this).data('categories');
-    // })
-    // console.log (sList);
 
 
 
-    // $('div.form-group--checkbox').each(function(i, obj) {
-    //   if ($(this.id)
-    // });
+      //       var sThisVal = (this.checked);
+      //       sList += (sList=="" ? sThisVal : "," + sThisVal);
+      //   });
+      //   console.log (sList);
+      // }
+      // }
+      // var sList = "";
+      // // $(this).attr('data-fullText')
+      // // $( "body" ).data( "foo", 52 )
+      // $('div[data=]').each(function () {
+      //   sList += $(this).data('categories');
+      // })
+      // console.log (sList);
+
+
+
+      // $('div.form-group--checkbox').each(function(i, obj) {
+      //   if ($(this.id)
+      // });
 
 
 
 
-  //  function toggleFields() {
-  //   var arr = ['3','4','5'];
-  //   var value = $("#chosenmove1").val();
-    
-  //   if (jQuery.inArray(value, arr) > -1)
-  //       $("#hideme").show();
-  //   else
-  //       $("#hideme").hide();
-    
-  //   }
+      //  function toggleFields() {
+      //   var arr = ['3','4','5'];
+      //   var value = $("#chosenmove1").val();
 
-//   if (this.currentStep == 3) {
-//       // alert("TEST")
-//       //   var element = document.getElementById("aaa");
-//       //   element.parentNode.removeChild(element);
-//  }
+      //   if (jQuery.inArray(value, arr) > -1)
+      //       $("#hideme").show();
+      //   else
+      //       $("#hideme").hide();
+
+      //   }
+
+      //   if (this.currentStep == 3) {
+      //       // alert("TEST")
+      //       //   var element = document.getElementById("aaa");
+      //       //   element.parentNode.removeChild(element);
+      //  }
 
       this.slides.forEach(slide => {
         slide.classList.remove("active");
@@ -300,15 +326,77 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
       // TODO: get data from inputs and show them in summary
-  }
+      if (this.currentStep == 5) {
+        var bags = $('input[name=bags]').val()
+        var orgName = $('input[name=organization]:checked').next().next().children(":first").text();
+        if (bags == 1) {
+          var bags_text = '1. worek darów'
+        } else if (bags < 5) {
+          var bags_text = bags + ' worki'
+        } else {
+          var bags_text = bags + ' worków'
+        }
+        $('span.icon-bag').next().text(bags_text)
+        $('span.icon-hand').next().text('Dary otrzyma ' + orgName)
+        var firstAddress = $('h4:contains("Adres odbioru:")').next().children(":first")
+        var secondAddress = firstAddress.next();
+        var postCode = secondAddress.next();
+        var phoneNumber = postCode.next();
+        var firstDate = $('h4:contains("Termin odbioru:")').next().children(":first")
+        var secondDate = firstDate.next()
+        var comments = secondDate.next()
+
+        // console.log(firstDate)
+        // console.log(secondDate)
+
+        firstAddress.text($("input[name=address]").val());
+        secondAddress.text($("input[name=city]").val());
+        postCode.text($("input[name=postcode]").val());
+        phoneNumber.text($("input[name=phone]").val());
+
+        firstDate.text($("input[name=data]").val());
+        secondDate.text($("input[name=time]").val());
+        comments.text($("textarea[name=more_info]").val());
+
+      }
+    }
 
     /**
      * Submit form
      *
      * TODO: validation, send data to server
      */
+
+
     submit(e) {
       e.preventDefault();
+
+      $.ajax({
+        data: {
+            quantity: $('input[name=bags]').val(),
+            categories: JSON.stringify(institutionCats),
+            organization: $('input[name=organization]:checked').parent().parent().attr("id"),
+            address: $("input[name=address]").val(),
+            city: $("input[name=city]").val(),
+            postcode: $("input[name=postcode]").val(),
+            phone: $("input[name=phone]").val(),
+            data: $("input[name=data]").val(),
+            time: $("input[name=time]").val(),
+            more_info: $("textarea[name=more_info]").val(),
+        }, // get the form data
+        type: 'POST', // GET or POST
+        url: "#",
+        // on success
+        success: function() {
+            // alert("Thank you. Form sent successfully ");
+            location.href = "/confirmation"
+        },
+        // on error
+        error : function(xhr,errmsg,err) {
+          console.log(xhr.status + ": " + xhr.responseText); 
+        }
+      });
+
       this.currentStep++;
       this.updateForm();
     }

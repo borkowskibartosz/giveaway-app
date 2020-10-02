@@ -64,7 +64,8 @@
       <div class="form--steps-container">
         <div class="form--steps-counter">Krok <span>1</span>/5</div>
 
-        <form action="{% url 'confirmation' %}" method="post">
+        <form action="{% url 'add-donation' %}" method="POST">
+          {% csrf_token %}
           <!-- STEP 1: class .active is switching steps -->
           <div data-step="1" class="active">
             <h3>Zaznacz co chcesz oddać:</h3>
@@ -97,7 +98,7 @@
             <div class="form-group form-group--inline">
               <label>
                 Liczba 60l worków:
-                <input type="number" name="bags" step="1" min="1" required/>
+                <input type="number" name="bags" step="1" min="1" value="1" required/>
               </label>
             </div>
 
@@ -140,22 +141,22 @@
               <div class="form-section--column">
                 <h4>Adres odbioru</h4>
                 <div class="form-group form-group--inline">
-                  <label> Ulica <input type="text" name="address" /> </label>
+                  <label> Ulica <input type="text" name="address" value="Testowa 12"/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
-                  <label> Miasto <input type="text" name="city" /> </label>
+                  <label> Miasto <input type="text" name="city" value="Warszawa"/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
                   <label>
-                    Kod pocztowy <input type="text" name="postcode" pattern="[0-9]+"/>
+                    Kod pocztowy <input type="text" name="postcode" pattern="[0-9]+" value="02123"/>
                   </label>
                 </div>
 
                 <div class="form-group form-group--inline">
                   <label>
-                    Numer telefonu <input type="phone" name="phone" />
+                    Numer telefonu <input type="phone" name="phone" required value="555888777"/>
                   </label>
                 </div>
               </div>
@@ -163,17 +164,17 @@
               <div class="form-section--column">
                 <h4>Termin odbioru</h4>
                 <div class="form-group form-group--inline">
-                  <label> Data <input type="date" name="data" /> </label>
+                  <label> Data <input type="date" name="data"/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
-                  <label> Godzina <input type="time" name="time" /> </label>
+                  <label> Godzina <input type="time" name="time"/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
                   <label>
                     Uwagi dla kuriera
-                    <textarea name="more_info" rows="5"></textarea>
+                    <textarea name="more_info" rows="5">Zostawić pod drzwiami</textarea>
                   </label>
                 </div>
               </div>
