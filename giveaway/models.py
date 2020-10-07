@@ -65,7 +65,7 @@ class Institution(models.Model):
     type = models.IntegerField(choices=TYPES, default=0)
     categories = models.ManyToManyField(Category, related_name='institutions')
     def __str__(self):
-        return f"Institution: {self.id} | {self.name} Desc.: {self.description} Type: {self.type}"
+        return f"Institution #{self.pk} | {self.name} Desc.: {self.description} Type: {self.type}"
 
 class Donation(models.Model):
     quantity = models.IntegerField(default=1)
@@ -78,10 +78,11 @@ class Donation(models.Model):
     pick_up_date = models.DateField()
     pick_up_time = models.TimeField()
     pick_up_comment = models.TextField()
+    is_taken = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, default=None)
 
     def __str__(self):
-        return f"Donation: {self.quantity} Institution.: {self.institution}"
+        return f"Donation of {self.quantity} bags for {self.institution.name}"
 
 # def remove_field(model_cls, field_name):
 #     for field in model_cls._meta.local_fields:

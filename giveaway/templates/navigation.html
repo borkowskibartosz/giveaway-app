@@ -4,14 +4,15 @@
             <li class="logged-user">
               Witaj {{ user.first_name }}
               <ul class="dropdown">
-                <li><a href="#">Profil</a></li>
-                <li><a href="#">Ustawienia</a></li>
+                <li><a href="{% url 'profile' %}">Profil</a></li>
+                <li><a href="{% url 'edit-profile' user.id%}">Ustawienia</a></li>
+                {% if user.is_superuser %}<li><a href="/admin">Panel administratora</a></li>{% endif %}
                 <li><a href="{% url 'logout' %}">Wyloguj</a></li>
               </ul>
             </li>          
           {% else %}
           <li><a href="{% url 'login' %}" class="btn btn--small btn--without-border">Zaloguj</a></li>
-          <li><a href="{% url 'register' %}" class="btn btn--small btn--highlighted">Załóż konto</a></li>
+          <li><a href="{% url 'register' %}#register" class="btn btn--small btn--highlighted">Załóż konto</a></li>
           {% endif %}
         </ul>
 

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{%load static%}
+<!DOCTYPE html>
+
+{% block header %}
+<header class="header">
+    {% include 'navigation.html' %}
+</header>
+{%endblock%}
+
+{% block content %}
+
+<div>
+    <div class="contact">
+        <h2>User info</h2>
+        </h2>
+
+
+        <table class="center">
+            <thead>
+                <tr>
+                    <th>First name</th>
+                    <td>{{user.first_name}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Last name</td>
+                    <td>{{user.last_name}}</td>
+                </tr>
+                <tr>
+                    <th>Email</td>
+                    <td>{{user.email}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h2></h2>
+
+        <table class='center' CELLSPACING=10 CELLPADDING=10>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ilość worków</th>
+                    <th>Organizacja</th>
+                    <th>Kategorie</th>
+                    <th>Przekazano</th>
+                    <th>Odebrano?</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for donation in user_donations %}
+                <tr>
+                    <td> {{donation.pk}} </td>
+                    <td> {{donation.quantity}} </td>
+                    <td> {{donation.institution.name}} </td>
+                    <td> {%for cat in donation.categories.all %}{% if forloop.last %}{{cat.name}}{%else%}{{cat.name}}<br>{%endif%}{%endfor%} </td>
+                    <td> {{donation.pick_up_date}} </td>
+                    <td> <a href="{% url 'archive-donation' donation.pk%}" class="btn">Archiwizuj</a> </td>
+                </tr>
+                {% endfor %}
+
+                {% for donation in user_archived_donations %}
+                <tr style="color: grey;">
+                    <td> {{donation.pk}} </td>
+                    <td> {{donation.quantity}} </td>
+                    <td> {{donation.institution.name}} </td>
+                    <td> {%for cat in donation.categories.all %}{% if forloop.last %}{{cat.name}}{%else%}{{cat.name}}<br>{%endif%}{%endfor%} </td>
+                    <td> {{donation.pick_up_date}} </td>
+                    <td> <a href="{% url 'archive-donation' donation.pk%}" class="btn">Przenieś do aktualnych</a> </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+        <h2></h2>
+
+    </div>
+</div>
+
+{% endblock content %}

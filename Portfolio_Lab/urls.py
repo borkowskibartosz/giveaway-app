@@ -16,9 +16,8 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-
-from django.urls import path, include, re_path
-from giveaway.views import MainView, AddDonation, Register, Login, AddDonationComplete
+from django.urls import path, re_path
+from giveaway.views import MainView, AddDonation, Register, Login, AddDonationComplete, ProfileView, ArchiveDonation, ProfileUpdateView
 
 urlpatterns = [
     re_path(r"^admin/", admin.site.urls),
@@ -27,6 +26,8 @@ urlpatterns = [
     path("register/", Register.as_view(), name="register"),
     path("login/", Login.as_view(), name="login"),
     path("logout/", auth_views.LogoutView.as_view(next_page="main"), name="logout",),
-    path('confirmation/', AddDonationComplete.as_view(), name ='confirmation'),
+    path('confirmation/', AddDonationComplete.as_view(), name='confirmation'),
+    path('profile/', ProfileView.as_view(), name='profile'),
+    path('profile/edit/<int:pk>/', ProfileUpdateView.as_view(), name='edit-profile'),
+    path('archive/<int:pk>/', ArchiveDonation.as_view(), name='archive-donation'),
 ]
-
