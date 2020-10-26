@@ -8,7 +8,8 @@ from .models import Donation
 class DonationForm(forms.ModelForm):
     class Meta:
         model = Donation
-        fields = '__all__'
+        exclude = ['user']
+
 
 class EditUserForm(forms.ModelForm):
     class Meta:

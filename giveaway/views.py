@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 from django.views.generic import TemplateView, FormView, CreateView, ListView, DetailView, UpdateView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, authenticate  
@@ -92,8 +93,8 @@ class AddDonation(LoginRequiredMixin, FormView):
     login_url = reverse_lazy("login")
     success_url = reverse_lazy("main")
     template_name = "AddDonation.html"
-    form_class = Donation
-    fields = '__all__'
+    # form_class = Donation
+    # fields = '__all__'
 
     def get_context_data(self):
         categories = Category.objects.all()
@@ -102,18 +103,28 @@ class AddDonation(LoginRequiredMixin, FormView):
         return ctx
 
     def post(self, request, *args, **kwargs):
-        if self.request.method == "POST" and self.request.is_ajax():
-            quantity = request.POST.get('quantity')
-            categories = request.POST.get('categories')
-            categories = json.dumps(categories)
-            institution = request.POST.get('organization')
-            address = request.POST.get('address')
-            city = request.POST.get('city')
-            postcode = request.POST.get('postcode')
-            phone = request.POST.get('phone')
-            pick_up_date = request.POST.get('data')
-            pick_up_time = request.POST.get('time')
-            pick_up_comment = request.POST.get('more_info')
+        form = DonationForm(request.POST)
+        print('inside post')
+        print(form)
+        if form.is_valid():
+            print('____form_valid____')
+            form_data_dict = {}
+            form_data_list = json.loads(form)
+            for field in form_data_list:
+                form_data_dict[field["name"]] = field["value"]
+            return form_data_dict
+
+            # quantity = request.POST.get('quantity')
+            # categories = request.POST.get('categories')
+            # # categories = json.dumps(categories)
+            # institution = request.POST.get('organization')
+            # address = request.POST.get('address')
+            # city = request.POST.get('city')
+            # postcode = request.POST.get('postcode')
+            # phone = request.POST.get('phone')
+            # pick_up_date = request.POST.get('data')
+            # pick_up_time = request.POST.get('time')
+            # pick_up_comment = request.POST.get('more_info')
 
             donation_current = Donation.objects.create(
                 quantity = quantity,
@@ -127,13 +138,17 @@ class AddDonation(LoginRequiredMixin, FormView):
                 pick_up_comment = pick_up_comment,
                 user = request.user,
                 )
-            io = StringIO(categories)
-            categories = json.load(io)
-            categories = re.findall("\d+", categories)
+            # io = StringIO(categories)
+            # categories = json.load(categories)
+            # categories = re.findall("\d+", categories)
             for cat_no in categories:
                 cat_obj = Category.objects.get(pk=cat_no)
                 donation_current.categories.add(cat_obj)
             return redirect('confirmation')
+        else: 
+            print('__Form invalid__')
+            print(form.errors)
+            return HttpResponse(json.dumps({'message':'not ok'}))
         return render(request, "AddDonation.html")            
 
 class Login(LoginView):

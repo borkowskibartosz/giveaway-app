@@ -1,27 +1,29 @@
 // https://stackoverflow.com/questions/298772/django-template-variables-and-javascript
 
-$(document).ready(function(){
-  function getCookie(c_name) {
-      if(document.cookie.length > 0) {
-          c_start = document.cookie.indexOf(c_name + "=");
-          if(c_start != -1) {
-              c_start = c_start + c_name.length + 1;
-              c_end = document.cookie.indexOf(";", c_start);
-              if(c_end == -1) c_end = document.cookie.length;
-              return unescape(document.cookie.substring(c_start,c_end));
-          }
-      }
-      return "";
-  }
+// $(document).ready(function(){
+//   function getCookie(c_name) {
+//       if(document.cookie.length > 0) {
+//           c_start = document.cookie.indexOf(c_name + "=");
+//           if(c_start != -1) {
+//               c_start = c_start + c_name.length + 1;
+//               c_end = document.cookie.indexOf(";", c_start);
+//               if(c_end == -1) c_end = document.cookie.length;
+//               return unescape(document.cookie.substring(c_start,c_end));
+//           }
+//       }
+//       return "";
+//   }
 
-  $(function () {
-      $.ajaxSetup({
-          headers: {
-              "X-CSRFToken": getCookie("csrftoken")
-          }
-      });
-  });
-});
+
+
+//   $(function () {
+//       $.ajaxSetup({
+//           headers: {
+//               "X-CSRFToken": getCookie("csrftoken")
+//           }
+//       });
+//   });
+// });
 
 document.addEventListener("DOMContentLoaded", function () {
   /**
@@ -259,17 +261,34 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         // console.log (cList);
 
-        $("div[data-categories]").each(function () {
-          institutionCats = $(this).data('categories').split(",")
-          // console.log(institutionCats);
-          let allFounded = cList.every(ai => institutionCats.includes(ai));
-          if (!allFounded) {
-            $(this).hide();
+        const keys = Object.keys(j_cats_dict);
+
+        keys.forEach((key, index) => {
+          let allFound = cList.every(ai => j_cats_dict[key].includes(Number(ai)));
+          var ins = $("body").find('#' + key);
+          if (!allFound) {
+            ins.hide();
           } else {
-            $(this).show();
+            ins.show();
           }
-        })
+        });
+
       }
+
+
+      //   $("div[data-categories]").each(function () {
+      //     // var abc = $(this).data('categories')
+      //     // console.log(abc)
+      //     institutionCats = $(this).data('categories').split(",")
+      //     // console.log(institutionCats);
+      //     let allFound = cList.every(ai => institutionCats.includes(ai));
+      //     if (!allFound) {
+      //       $(this).hide();
+      //     } else {
+      //       $(this).show();
+      //     }
+      //   })
+      // }
       // TODO: Validation
 
 
@@ -371,38 +390,109 @@ document.addEventListener("DOMContentLoaded", function () {
     submit(e) {
       e.preventDefault();
 
-      $.ajax({
-        data: {
-            quantity: $('input[name=bags]').val(),
-            categories: JSON.stringify(institutionCats),
-            organization: $('input[name=organization]:checked').parent().parent().attr("id"),
-            address: $("input[name=address]").val(),
-            city: $("input[name=city]").val(),
-            postcode: $("input[name=postcode]").val(),
-            phone: $("input[name=phone]").val(),
-            data: $("input[name=data]").val(),
-            time: $("input[name=time]").val(),
-            more_info: $("textarea[name=more_info]").val(),
-        }, // get the form data
-        type: 'POST', // GET or POST
-        url: "#",
-        // on success
-        success: function() {
-            // alert("Thank you. Form sent successfully ");
-            location.href = "/confirmation"
-        },
-        // on error
-        error : function(xhr,errmsg,err) {
-          console.log(xhr.status + ": " + xhr.responseText); 
+      var cList = [];
+      $("input:checkbox[name='categories']").each(function () {
+        if (this.checked) {
+          cList.push(this.value); // Lista wybranych kategorii
         }
       });
 
-      this.currentStep++;
-      this.updateForm();
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      };
+
+      function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+      }
+
+      function sameOrigin(url) {
+        // test that a given url is a same-origin URL
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+          (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+          // or any other URL that isn't scheme relative or absolute i.e relative.
+          !(/^(\/\/|http:|https:).*/.test(url));
+      }
+        
+        var csrftoken = getCookie('csrftoken');
+        // var csrfmiddlewaretoken = $('form').find("input[name='csrfmiddlewaretoken']").val();
+        // var formData = $('form').serializeArray();
+        // formData = JSON.stringify(formData);
+
+        //https://stackoverflow.com/questions/26941402/django-form-not-valid-form-is-valide-return-false-on-ajax-request
+        var data = new FormData(document.getElementById("form"));
+
+        data.append('quantity', $('input[name=bags]').val());
+        data.append('categories', $('input:checkbox[name=categories]:checked').val());
+        data.append('institution', $('input[name=organization]:checked').parent().parent().attr("id"));
+        data.append('address', $("input[name=address]").val());
+        data.append('city', $("input[name=city]").val());
+        data.append('zip_code', $("input[name=postcode]").val());
+        data.append('phone', $("input[name=phone]").val());
+        data.append('pick_up_date', $("input[name=data]").val());
+        data.append('pick_up_time', $("input[name=time]").val());
+        data.append('pick_up_comment', $("textarea[name=more_info]").val());
+
+        $.ajax({
+          data: data,
+          type: 'POST', // GET or POST
+          url: window.location.href,
+          cache: false,
+          processData: false,
+          contentType: false,
+          beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+              // Send the token to same-origin, relative URLs only.
+              // Send the token only if the method warrants CSRF protection
+              // Using the CSRFToken value acquired earlier
+              xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+          },
+
+          // data: $('form').serialize(),
+          // contentType: 'multipart/form-data', 
+          // dataType: 'json',
+          // processData: false,
+          // data : formData, // get the form data
+
+          // dataType : "json",
+          // on success
+          success: function (data) {
+            // alert("Thank you. Form sent successfully ");
+            var parseData = $.parseJSON(data);
+            console.log(parseData.message);
+            location.href = "/confirmation";
+          },
+          // on error
+          error: function (xhr, ajaxOptions, thrownError) {
+            alert(thrownError + '\n' + xhr.status + '\n' + ajaxOptions);
+          }
+        });
+
+        this.currentStep++;
+        this.updateForm();
+      }
     }
-  }
-  const form = document.querySelector(".form--steps");
-  if (form !== null) {
-    new FormSteps(form);
-  }
+    const form = document.querySelector(".form--steps");
+    if(form !== null) {
+  new FormSteps(form);
+}
 });

@@ -3,6 +3,19 @@
 
 {% block header %}
 
+<script type="text/javascript"> 
+  var j_cats_dict = {};
+  {% for institution in institutions %}
+    var j_cats = [];
+    {%for cat in institution.categories.all%}
+      j_cats.push({{cat.id}});
+    {%endfor%}
+    j_cats_dict[{{institution.id}}] = j_cats;
+  {% endfor %}
+  {% comment %} console.log(j_cats_dict) {% endcomment %}
+</script>
+
+
     <header class="header--form-page">
 
         {% include 'navigation.html' %}
@@ -64,7 +77,7 @@
       <div class="form--steps-container">
         <div class="form--steps-counter">Krok <span>1</span>/5</div>
 
-        <form action="{% url 'add-donation' %}" method="POST">
+        <form id="form" action="{% url 'add-donation' %}" method="POST">
           {% csrf_token %}
           <!-- STEP 1: class .active is switching steps -->
           <div data-step="1" class="active">
@@ -113,9 +126,9 @@
             <h3>Wybierz organizacje, której chcesz pomóc:</h3>
 
             {% for institution in institutions %}
-            <div class="form-group form-group--checkbox" id="{{institution.id}}" data-categories="{%for cat in institution.categories.all%}{% if forloop.last %}{{cat.id}}{%else%}{{cat.id}},{% endif %}{%endfor%}">
+            <div class="form-group form-group--checkbox" id="{{institution.id}}">
               <label>
-                <input type="radio" name="organization" value="old" />
+                <input type="radio" name="organization" value="{{institution.id}}" />
                 <span class="checkbox radio"></span>
                 <span class="description">
                   <div class="title">{{institution.name}}</div>
