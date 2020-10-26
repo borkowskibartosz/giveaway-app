@@ -477,8 +477,8 @@ document.addEventListener("DOMContentLoaded", function () {
           // on success
           success: function (data) {
             // alert("Thank you. Form sent successfully ");
-            var parseData = $.parseJSON(data);
-            console.log(parseData.message);
+            // var parseData = $.parseJSON(data);
+            // console.log(parseData.message);
             location.href = "/confirmation";
           },
           // on error

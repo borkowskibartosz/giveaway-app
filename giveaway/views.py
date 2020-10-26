@@ -104,47 +104,37 @@ class AddDonation(LoginRequiredMixin, FormView):
 
     def post(self, request, *args, **kwargs):
         form = DonationForm(request.POST)
-        print('inside post')
-        print(form)
         if form.is_valid():
-            print('____form_valid____')
-            form_data_dict = {}
-            form_data_list = json.loads(form)
-            for field in form_data_list:
-                form_data_dict[field["name"]] = field["value"]
-            return form_data_dict
-
-            # quantity = request.POST.get('quantity')
-            # categories = request.POST.get('categories')
-            # # categories = json.dumps(categories)
-            # institution = request.POST.get('organization')
-            # address = request.POST.get('address')
-            # city = request.POST.get('city')
-            # postcode = request.POST.get('postcode')
-            # phone = request.POST.get('phone')
-            # pick_up_date = request.POST.get('data')
-            # pick_up_time = request.POST.get('time')
-            # pick_up_comment = request.POST.get('more_info')
-
-            donation_current = Donation.objects.create(
-                quantity = quantity,
-                institution = Institution.objects.get(pk=institution),
-                address = address,
-                city = city,
-                zip_code = postcode,
-                phone = phone,
-                pick_up_date = pick_up_date,
-                pick_up_time = pick_up_time,
-                pick_up_comment = pick_up_comment,
-                user = request.user,
-                )
-            # io = StringIO(categories)
-            # categories = json.load(categories)
-            # categories = re.findall("\d+", categories)
-            for cat_no in categories:
-                cat_obj = Category.objects.get(pk=cat_no)
-                donation_current.categories.add(cat_obj)
-            return redirect('confirmation')
+            add_user = form.save(commit=False)
+            add_user.user = self.request.user
+            add_user.save()
+            # form = form.save(commit=False)
+            # quantity = form.cleaned_data.get['quantity']
+            # categories = form.cleaned_data.get['categories']
+            # institution = form.cleaned_data.get['institution']
+            # address = form.cleaned_data.get['address']
+            # city = form.cleaned_data.get['city']
+            # zip_code = form.cleaned_data.get['zip_code']
+            # phone = form.cleaned_data.get['phone']
+            # pick_up_date = form.cleaned_data.get['pick_up_date']
+            # pick_up_time = form.cleaned_data.get['pick_up_time']
+            # pick_up_comment = form.cleaned_data.get['pick_up_comment']
+            # donation_current = Donation.objects.create(
+            #     quantity = quantity,
+            #     institution = institution,
+            #     address = address,
+            #     city = city,
+            #     zip_code = zip_code,
+            #     phone = phone,
+            #     pick_up_date = pick_up_date,
+            #     pick_up_time = pick_up_time,
+            #     pick_up_comment = pick_up_comment,
+            #     user = request.user,
+            #     )
+            # for cat_no in categories:
+            #     cat_obj = Category.objects.get(pk=cat_no)
+            #     donation_current.categories.add(cat_obj)
+            # return redirect('confirmation')
         else: 
             print('__Form invalid__')
             print(form.errors)
