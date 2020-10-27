@@ -30,4 +30,10 @@ urlpatterns = [
     path('profile/', ProfileView.as_view(), name='profile'),
     path('profile/edit/<int:pk>/', ProfileUpdateView.as_view(), name='edit-profile'),
     path('archive/<int:pk>/', ArchiveDonation.as_view(), name='archive-donation'),
+    path('change-password/',
+        auth_views.PasswordChangeView.as_view(
+            template_name='change-password.html',
+            success_url = '/'
+        ),
+        name='change-password'),
 ]

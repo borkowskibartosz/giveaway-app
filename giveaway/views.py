@@ -2,12 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.views.generic import TemplateView, FormView, CreateView, ListView, DetailView, UpdateView
 from django.contrib.auth.views import LoginView
-from django.contrib.auth import login, authenticate  
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     LoginRequiredMixin,
     UserPassesTestMixin,
-)  
+)
 from django.core.paginator import Paginator
 
 from django.http import JsonResponse
@@ -20,6 +20,7 @@ from io import StringIO
 import re
 
 # Create your views here.
+
 
 class MainView(TemplateView):
     template_name = "index.html"
@@ -39,14 +40,18 @@ class MainView(TemplateView):
         context["all_orgs_type_2"] = all_orgs_type_2
         return context
 
+
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "profile.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["user_donations"] = Donation.objects.filter(Q(user=self.request.user) & Q(is_taken=False))
-        context["user_archived_donations"] = Donation.objects.filter(Q(user=self.request.user) & Q(is_taken=True))
+        context["user_donations"] = Donation.objects.filter(
+            Q(user=self.request.user) & Q(is_taken=False))
+        context["user_archived_donations"] = Donation.objects.filter(
+            Q(user=self.request.user) & Q(is_taken=True))
         return context
+
 
 class ArchiveDonation(UpdateView):
     success_url = reverse_lazy("profile")
@@ -67,6 +72,7 @@ class ArchiveDonation(UpdateView):
                 arch_donation.save()
             return redirect('profile')
 
+
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = EditUserForm
@@ -79,22 +85,21 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         user_ = request.user
         if form.is_valid():
             user_new_info = form.save(commit=False)
-            user_auth = authenticate(username=user_.email, password=form.cleaned_data['password'])
+            user_auth = authenticate(
+                username=user_.email, password=form.cleaned_data['password'])
             if user_auth is not None:
                 user_.first_name = user_new_info.first_name
                 user_.last_name = user_new_info.last_name
                 user_.save()
                 return redirect('main')
         else:
-            return render(request, 'index.html', {'form': form})   
+            return render(request, 'index.html', {'form': form})
 
 
 class AddDonation(LoginRequiredMixin, FormView):
     login_url = reverse_lazy("login")
     success_url = reverse_lazy("main")
     template_name = "AddDonation.html"
-    # form_class = Donation
-    # fields = '__all__'
 
     def get_context_data(self):
         categories = Category.objects.all()
@@ -108,38 +113,13 @@ class AddDonation(LoginRequiredMixin, FormView):
             add_user = form.save(commit=False)
             add_user.user = self.request.user
             add_user.save()
-            # form = form.save(commit=False)
-            # quantity = form.cleaned_data.get['quantity']
-            # categories = form.cleaned_data.get['categories']
-            # institution = form.cleaned_data.get['institution']
-            # address = form.cleaned_data.get['address']
-            # city = form.cleaned_data.get['city']
-            # zip_code = form.cleaned_data.get['zip_code']
-            # phone = form.cleaned_data.get['phone']
-            # pick_up_date = form.cleaned_data.get['pick_up_date']
-            # pick_up_time = form.cleaned_data.get['pick_up_time']
-            # pick_up_comment = form.cleaned_data.get['pick_up_comment']
-            # donation_current = Donation.objects.create(
-            #     quantity = quantity,
-            #     institution = institution,
-            #     address = address,
-            #     city = city,
-            #     zip_code = zip_code,
-            #     phone = phone,
-            #     pick_up_date = pick_up_date,
-            #     pick_up_time = pick_up_time,
-            #     pick_up_comment = pick_up_comment,
-            #     user = request.user,
-            #     )
-            # for cat_no in categories:
-            #     cat_obj = Category.objects.get(pk=cat_no)
-            #     donation_current.categories.add(cat_obj)
-            # return redirect('confirmation')
-        else: 
+            return redirect('confirmation')
+        else:
             print('__Form invalid__')
             print(form.errors)
-            return HttpResponse(json.dumps({'message':'not ok'}))
-        return render(request, "AddDonation.html")            
+            return HttpResponse(json.dumps({'message': 'not ok'}))
+        return render(request, "AddDonation.html")
+
 
 class Login(LoginView):
     template_name = "login.html"
@@ -166,11 +146,12 @@ class Register(FormView):
             login(request, user)
             return redirect('main')
         else:
-            print('Invalid')
-            print(form.is_valid())  #form contains data and errors
+            print('Form is invalid')
+            print(form.is_valid())  # form contains data and errors
             print(form.errors)
-            form = UserSignUpForm()
+            
         return render(request, 'register.html', {"form": form})
+
 
 class AddDonationComplete(TemplateView):
     template_name = 'form-confirmation.html'
