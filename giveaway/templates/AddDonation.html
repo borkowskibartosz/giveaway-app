@@ -15,7 +15,6 @@
   {% comment %} console.log(j_cats_dict) {% endcomment %}
 </script>
 
-
     <header class="header--form-page">
 
         {% include 'navigation.html' %}
@@ -154,16 +153,16 @@
               <div class="form-section--column">
                 <h4>Adres odbioru</h4>
                 <div class="form-group form-group--inline">
-                  <label> Ulica <input type="text" name="address" value="Testowa 12"/> </label>
+                  <label> Ulica <input type="text" name="address" required value="Testowa 12"/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
-                  <label> Miasto <input type="text" name="city" value="Warszawa"/> </label>
+                  <label> Miasto <input type="text" name="city" required value="Warszawa"/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
                   <label>
-                    Kod pocztowy <input type="text" name="postcode" pattern="[0-9]+" value="02123"/>
+                    Kod pocztowy <input type="text" name="postcode" pattern="[0-9]+" required value="02123"/>
                   </label>
                 </div>
 
@@ -177,11 +176,11 @@
               <div class="form-section--column">
                 <h4>Termin odbioru</h4>
                 <div class="form-group form-group--inline">
-                  <label> Data <input type="date" name="data"/> </label>
+                  <label> Data <input type="date" name="data" required/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
-                  <label> Godzina <input type="time" name="time"/> </label>
+                  <label> Godzina <input type="time" name="time" required/> </label>
                 </div>
 
                 <div class="form-group form-group--inline">

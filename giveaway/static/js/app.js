@@ -1,35 +1,8 @@
-// https://stackoverflow.com/questions/298772/django-template-variables-and-javascript
-
-// $(document).ready(function(){
-//   function getCookie(c_name) {
-//       if(document.cookie.length > 0) {
-//           c_start = document.cookie.indexOf(c_name + "=");
-//           if(c_start != -1) {
-//               c_start = c_start + c_name.length + 1;
-//               c_end = document.cookie.indexOf(";", c_start);
-//               if(c_end == -1) c_end = document.cookie.length;
-//               return unescape(document.cookie.substring(c_start,c_end));
-//           }
-//       }
-//       return "";
-//   }
-
-
-
-//   $(function () {
-//       $.ajaxSetup({
-//           headers: {
-//               "X-CSRFToken": getCookie("csrftoken")
-//           }
-//       });
-//   });
-// });
-
 document.addEventListener("DOMContentLoaded", function () {
   /**
    * HomePage - Help section
    */
-  var institutionCats
+
   class Help {
     constructor($el) {
       this.$el = $el;
@@ -214,6 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
     init() {
       this.events();
       this.updateForm();
+      // console.log(this.currentStep)
     }
 
     /**
@@ -224,8 +198,10 @@ document.addEventListener("DOMContentLoaded", function () {
       this.$next.forEach(btn => {
         btn.addEventListener("click", e => {
           e.preventDefault();
-          this.currentStep++;
-          this.updateForm();
+          if (this.formValidation()) {
+            this.currentStep++
+            this.updateForm();
+          }
         });
       });
 
@@ -233,8 +209,10 @@ document.addEventListener("DOMContentLoaded", function () {
       this.$prev.forEach(btn => {
         btn.addEventListener("click", e => {
           e.preventDefault();
-          this.currentStep--;
-          this.updateForm();
+          if (this.formValidation()) {
+            this.currentStep--
+            this.updateForm();
+          }
         });
       });
 
@@ -246,10 +224,122 @@ document.addEventListener("DOMContentLoaded", function () {
      * Update form front-end
      * Show next or previous section etc.
      */
+    formValidation() {
+
+      if (this.currentStep == 1) {
+        var form = $("#form")
+        var boxes = $("input:checkbox[name='categories']")
+        if (boxes.filter(':checked').length == 0) {
+          alert('Please select at least one category')
+          return false
+        }
+      }
+
+      else if (this.currentStep == 2) {
+        var form = $("#form")
+        form.validate({
+          errorElement: 'div',
+          errorClass: 'form-group--inline',
+          highlight: function (element, errorClass, validClass) {
+            $(element).closest('.form-group').addClass("has-error");
+          },
+          unhighlight: function (element, errorClass, validClass) {
+            $(element).closest('.form-group').removeClass("has-error");
+          },
+          // Specify validation rules
+          rules: {
+            bags: {
+              required: true,
+              digits: true
+            }
+          },
+          // Specify validation error messages
+          messages: {
+            bags: "Please select number of bags",
+          },
+          // Make sure the form is submitted to the destination defined
+          // in the "action" attribute of the form when valid
+
+        });
+      }
+
+      else if (this.currentStep == 3) {
+        var form = $("#form")
+        var boxes = $('input[name=organization]')
+        if (boxes.filter(':checked').length == 0) {
+          alert('Please select an organization')
+          return false
+        }
+      }
+
+      else if (this.currentStep == 4) {
+        var form = $("#form")
+        form.validate({
+          errorElement: 'div',
+          errorClass: 'form-group--inline',
+          highlight: function (element, errorClass, validClass) {
+            $(element).closest('.form-group').addClass("has-error");
+          },
+          unhighlight: function (element, errorClass, validClass) {
+            $(element).closest('.form-group').removeClass("has-error");
+          },
+          // Specify validation rules
+          rules: {
+            address: {
+              required: true,
+            },
+            city: {
+              required: true,
+            },
+            postcode: {
+              required: true,
+              digits: true,
+              minlength: 5,
+              maxlength: 5,
+            },
+            data: {
+              required: true,
+            },
+            phone: {
+              required: true,
+            },
+            time: {
+              required: true,
+            },
+          },
+          // Specify validation error messages
+          messages: {
+            address: "Please type in an address",
+            city: "Please type in a city",
+            postcode: 'Please add psotcode',
+            data: 'Please add a date',
+            time: 'Please add a time'
+          },
+
+          
+          // Make sure the form is submitted to the destination defined
+          // in the "action" attribute of the form when valid
+
+        });
+      }
+
+      else if (this.currentStep == 5) {
+        console.log('pass')
+      }
+
+      if (form.valid()) {
+        return true
+      } else {
+        return false
+      }
+    }
+
     updateForm() {
       this.$step.innerText = this.currentStep;
 
       // Filter by categories
+
+
 
       if (this.currentStep == 3) {
 
@@ -275,63 +365,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
       }
 
-
-      //   $("div[data-categories]").each(function () {
-      //     // var abc = $(this).data('categories')
-      //     // console.log(abc)
-      //     institutionCats = $(this).data('categories').split(",")
-      //     // console.log(institutionCats);
-      //     let allFound = cList.every(ai => institutionCats.includes(ai));
-      //     if (!allFound) {
-      //       $(this).hide();
-      //     } else {
-      //       $(this).show();
-      //     }
-      //   })
-      // }
       // TODO: Validation
 
 
 
-      //       var sThisVal = (this.checked);
-      //       sList += (sList=="" ? sThisVal : "," + sThisVal);
-      //   });
-      //   console.log (sList);
-      // }
-      // }
-      // var sList = "";
-      // // $(this).attr('data-fullText')
-      // // $( "body" ).data( "foo", 52 )
-      // $('div[data=]').each(function () {
-      //   sList += $(this).data('categories');
-      // })
-      // console.log (sList);
-
-
-
-      // $('div.form-group--checkbox').each(function(i, obj) {
-      //   if ($(this.id)
-      // });
-
-
-
-
-      //  function toggleFields() {
-      //   var arr = ['3','4','5'];
-      //   var value = $("#chosenmove1").val();
-
-      //   if (jQuery.inArray(value, arr) > -1)
-      //       $("#hideme").show();
-      //   else
-      //       $("#hideme").hide();
-
-      //   }
-
-      //   if (this.currentStep == 3) {
-      //       // alert("TEST")
-      //       //   var element = document.getElementById("aaa");
-      //       //   element.parentNode.removeChild(element);
-      //  }
 
       this.slides.forEach(slide => {
         slide.classList.remove("active");
@@ -431,68 +468,68 @@ document.addEventListener("DOMContentLoaded", function () {
           // or any other URL that isn't scheme relative or absolute i.e relative.
           !(/^(\/\/|http:|https:).*/.test(url));
       }
-        
-        var csrftoken = getCookie('csrftoken');
-        // var csrfmiddlewaretoken = $('form').find("input[name='csrfmiddlewaretoken']").val();
-        // var formData = $('form').serializeArray();
-        // formData = JSON.stringify(formData);
 
-        //https://stackoverflow.com/questions/26941402/django-form-not-valid-form-is-valide-return-false-on-ajax-request
-        var data = new FormData(document.getElementById("form"));
+      var csrftoken = getCookie('csrftoken');
+      // var csrfmiddlewaretoken = $('form').find("input[name='csrfmiddlewaretoken']").val();
+      // var formData = $('form').serializeArray();
+      // formData = JSON.stringify(formData);
 
-        data.append('quantity', $('input[name=bags]').val());
-        data.append('categories', $('input:checkbox[name=categories]:checked').val());
-        data.append('institution', $('input[name=organization]:checked').parent().parent().attr("id"));
-        data.append('address', $("input[name=address]").val());
-        data.append('city', $("input[name=city]").val());
-        data.append('zip_code', $("input[name=postcode]").val());
-        data.append('phone', $("input[name=phone]").val());
-        data.append('pick_up_date', $("input[name=data]").val());
-        data.append('pick_up_time', $("input[name=time]").val());
-        data.append('pick_up_comment', $("textarea[name=more_info]").val());
+      //https://stackoverflow.com/questions/26941402/django-form-not-valid-form-is-valide-return-false-on-ajax-request
+      var data = new FormData(document.getElementById("form"));
 
-        $.ajax({
-          data: data,
-          type: 'POST', // GET or POST
-          url: window.location.href,
-          cache: false,
-          processData: false,
-          contentType: false,
-          beforeSend: function (xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-              // Send the token to same-origin, relative URLs only.
-              // Send the token only if the method warrants CSRF protection
-              // Using the CSRFToken value acquired earlier
-              xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-          },
+      data.append('quantity', $('input[name=bags]').val());
+      data.append('categories', $('input:checkbox[name=categories]:checked').val());
+      data.append('institution', $('input[name=organization]:checked').parent().parent().attr("id"));
+      data.append('address', $("input[name=address]").val());
+      data.append('city', $("input[name=city]").val());
+      data.append('zip_code', $("input[name=postcode]").val());
+      data.append('phone', $("input[name=phone]").val());
+      data.append('pick_up_date', $("input[name=data]").val());
+      data.append('pick_up_time', $("input[name=time]").val());
+      data.append('pick_up_comment', $("textarea[name=more_info]").val());
 
-          // data: $('form').serialize(),
-          // contentType: 'multipart/form-data', 
-          // dataType: 'json',
-          // processData: false,
-          // data : formData, // get the form data
-
-          // dataType : "json",
-          // on success
-          success: function (data) {
-            // alert("Thank you. Form sent successfully ");
-            // var parseData = $.parseJSON(data);
-            // console.log(parseData.message);
-            location.href = "/confirmation";
-          },
-          // on error
-          error: function (xhr, ajaxOptions, thrownError) {
-            alert(thrownError + '\n' + xhr.status + '\n' + ajaxOptions);
+      $.ajax({
+        data: data,
+        type: 'POST', // GET or POST
+        url: window.location.href,
+        cache: false,
+        processData: false,
+        contentType: false,
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+            // Send the token to same-origin, relative URLs only.
+            // Send the token only if the method warrants CSRF protection
+            // Using the CSRFToken value acquired earlier
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
           }
-        });
+        },
 
-        this.currentStep++;
-        this.updateForm();
-      }
+        // data: $('form').serialize(),
+        // contentType: 'multipart/form-data', 
+        // dataType: 'json',
+        // processData: false,
+        // data : formData, // get the form data
+
+        // dataType : "json",
+        // on success
+        success: function (data) {
+          // alert("Thank you. Form sent successfully ");
+          // var parseData = $.parseJSON(data);
+          // console.log(parseData.message);
+          location.href = "/confirmation";
+        },
+        // on error
+        error: function (xhr, ajaxOptions, thrownError) {
+          alert(thrownError + '\n' + xhr.status + '\n' + ajaxOptions);
+        }
+      });
+
+      this.currentStep++;
+      this.updateForm();
     }
-    const form = document.querySelector(".form--steps");
-    if(form !== null) {
-  new FormSteps(form);
-}
+  }
+  const form = document.querySelector(".form--steps");
+  if (form !== null) {
+    new FormSteps(form);
+  }
 });
